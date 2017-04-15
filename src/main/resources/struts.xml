@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+    <package name="user" namespace="/user" extends="struts-default">
+        <action name="info" class="com.hpit.web.UserAction">
+            <result name="success">/info.jsp</result>
+        </action>
+    </package>
+
+    <package name="json" namespace="/json" extends="json-default">
+        <action name="showJson" class="com.hpit.web.UserActionJson">
+            <result name="success" type="json">
+                <!--root表示Json的根节点-->
+                <!--user表示你要Json化的变量名-->
+                <param name="root">user</param>
+            </result>
+        </action>
+    </package>
+
+    <!--文件上传-->>
+</struts>

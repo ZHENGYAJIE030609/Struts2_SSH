@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-4.3.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+    <util:properties location="classpath:Mysql.properties" id="connMethod" />
+    <!--1配置一个数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="#{connMethod.url}" />
+        <property name="driverClassName" value="#{connMethod.driver}" />
+        <property name="username" value="#{connMethod.username}" />
+        <property name="password" value="#{connMethod.password}" />
+        <property name="initialSize" value="#{connMethod.initialSize}" />
+        <property name="maxActive" value="#{connMethod.maxActive}" />
+    </bean>
+
+    <!--2SessionFactory会话工厂-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="show_sql">true</prop>
+                <prop key="format_sql">true</prop>
+            </props>
+        </property>
+        <property name="mappingLocations">
+            <list>
+                <value>classpath:com/hpit/entity/*.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--3.Hibernate模板类-->
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <!--4.Spring托管事务管理-->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!--5.AOP配置事务拦截-->
+    <tx:advice transaction-manager="transactionManager" id="transactionInterceptor">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut id="trancationPonit" expression="execution(* com.hpit.service..*.*(..))"/>
+        <aop:advisor advice-ref="transactionInterceptor" pointcut-ref="trancationPonit" />
+    </aop:config>
+
+    <bean id="baseDao" class="com.hpit.dao.impl.BaseDao" autowire="byName" />
+    <bean id="userDao" class="com.hpit.dao.impl.UserDao" autowire="byName" />
+    <bean id="baseService" class="com.hpit.service.impl.BaseService" autowire="byName" />
+    <bean id="userService" class="com.hpit.service.impl.UserService" autowire="byName" />
+    <bean id="userAction" class="com.hpit.web.UserAction" autowire="byName" />
+</beans>

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.hpit.entity.User" table="user" schema="java6525">
+        <id name="id">
+            <column name="id" sql-type="int" length="11"/>
+        </id>
+        <property name="username">
+            <column name="username" sql-type="varchar(20)" length="20"/>
+        </property>
+        <property name="password">
+            <column name="password" sql-type="varchar(20)" length="20"/>
+        </property>
+        <property name="tel">
+            <column name="tel" sql-type="int" length="11"/>
+        </property>
+        <property name="email">
+            <column name="email" sql-type="int" length="11"/>
+        </property>
+    </class>
+</hibernate-mapping>
